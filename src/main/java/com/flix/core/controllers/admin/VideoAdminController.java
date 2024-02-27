@@ -42,4 +42,9 @@ public class VideoAdminController {
   public void deleteById(@PathVariable String id) throws NotFoundException {
     videoAdminService.deleteById(id);
   }
+
+  @GetMapping("/exists/{videoLink}")
+  boolean existsVideo(@PathVariable String videoLink) {
+    return videoAdminService.existsVideo(videoLink);
+  }
 }

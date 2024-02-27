@@ -71,6 +71,11 @@ public class VideoAdminServiceImpl implements VideoAdminService {
     log.info("Video deleted successfully. ID: {}", id);
   }
 
+  @Override
+  public boolean existsVideo(String videoLink) {
+    return videoRepository.findByLink(videoLink).isPresent();
+  }
+
   private Video findById(String id) throws NotFoundException {
     Optional<Video> optionalVideo = videoRepository.findById(id);
     if (optionalVideo.isPresent()) {
