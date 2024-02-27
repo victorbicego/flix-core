@@ -67,6 +67,7 @@ public class VideoAdminServiceImpl implements VideoAdminService {
   public void deleteById(String id) throws NotFoundException {
     findById(id);
     videoRepository.deleteById(id);
+    log.info("Video deleted successfully. ID: {}", id);
   }
 
   private Video findById(String id) throws NotFoundException {

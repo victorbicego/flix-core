@@ -66,6 +66,7 @@ public class UserAdminServiceImpl implements UserAdminService {
   public void deleteById(String id) throws NotFoundException {
     findById(id);
     userRepository.deleteById(id);
+    log.info("User deleted successfully. ID: {}", id);
   }
 
   private User findById(String id) throws NotFoundException {

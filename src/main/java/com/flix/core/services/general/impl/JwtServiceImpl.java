@@ -1,5 +1,6 @@
 package com.flix.core.services.general.impl;
 
+import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.services.general.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -7,6 +8,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +23,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
+@Slf4j
 public class JwtServiceImpl implements JwtService {
 
   private final String secretKey;
@@ -56,6 +60,22 @@ public class JwtServiceImpl implements JwtService {
                     + 10 * 60 * 60 * 800)) // Token should be valid for 10 hours
         .signWith(getSignInKey(), SignatureAlgorithm.HS256)
         .compact();
+  }
+
+  @Override
+  public String getActiveUsername() {
+    HttpServletRequest request =
+            ((ServletRequestAttributes)
+                    Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                    .getRequest();
+    String authorizationHeader = request.getHeader("Authorization");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+      return extractClaim(authorizationHeader.substring(7), Claims::getSubject);
+    } else {
+      IllegalArgumentException exception = new IllegalArgumentException("JWT Token is not present or invalid.");
+      log.error("Failed to get token. Reason: {}",exception.getMessage(),exception);
+      throw exception;
+    }
   }
 
   private Claims extractAllClaims(String token) {

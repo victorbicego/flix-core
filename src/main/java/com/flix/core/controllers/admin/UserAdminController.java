@@ -4,6 +4,8 @@ import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.UserDto;
 import com.flix.core.services.admin.UserAdminService;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,12 +35,12 @@ public class UserAdminController {
   }
 
   @PostMapping("/save")
-  public UserDto save(@RequestBody UserDto userDto) {
+  public UserDto save(@RequestBody @Valid UserDto userDto) {
     return userAdminService.save(userDto);
   }
 
   @PutMapping("/update/{id}")
-  public UserDto update(@PathVariable String id, @RequestBody UserDto userDto)
+  public UserDto update(@PathVariable String id, @RequestBody @Valid UserDto userDto)
       throws NotFoundException {
     return userAdminService.update(id, userDto);
   }
