@@ -4,6 +4,8 @@ import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.VideoDto;
 import com.flix.core.services.admin.VideoAdminService;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +29,12 @@ public class VideoAdminController {
   }
 
   @PostMapping("/save")
-  public VideoDto save(@RequestBody VideoDto videoDto) throws NotFoundException {
+  public VideoDto save(@RequestBody @Valid VideoDto videoDto) throws NotFoundException {
     return videoAdminService.save(videoDto);
   }
 
   @PutMapping("/update/{id}")
-  public VideoDto update(@PathVariable String id, @RequestBody VideoDto videoDto)
+  public VideoDto update(@PathVariable String id, @RequestBody @Valid VideoDto videoDto)
       throws NotFoundException {
     return videoAdminService.update(id, videoDto);
   }

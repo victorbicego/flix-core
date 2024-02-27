@@ -1,6 +1,5 @@
 package com.flix.core.controllers;
 
-import com.flix.core.exceptions.InvalidOperationException;
 import com.flix.core.exceptions.NotFoundException;
 import jakarta.validation.ValidationException;
 import java.net.URI;
@@ -39,13 +38,6 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
   public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
     HttpHeaders headers = new HttpHeaders();
     return handleExceptionInternal(ex, null, headers, HttpStatus.NOT_FOUND, request);
-  }
-
-  @ExceptionHandler
-  public ResponseEntity<Object> handleOperationInvalidException(
-      InvalidOperationException ex, WebRequest request) {
-    HttpHeaders headers = new HttpHeaders();
-    return handleExceptionInternal(ex, null, headers, HttpStatus.BAD_REQUEST, request);
   }
 
   @ExceptionHandler

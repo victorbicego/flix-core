@@ -5,7 +5,6 @@ import com.flix.core.models.dtos.VideoDto;
 import com.flix.core.models.entities.Video;
 import com.flix.core.models.mappers.VideoMapper;
 import com.flix.core.repositories.VideoRepository;
-import com.flix.core.services.admin.CategoryAdminService;
 import com.flix.core.services.admin.ChannelAdminService;
 import com.flix.core.services.admin.VideoAdminService;
 import java.util.List;
@@ -25,13 +24,11 @@ public class VideoAdminServiceImpl implements VideoAdminService {
   private final VideoRepository videoRepository;
   private final VideoMapper videoMapper;
   private final ChannelAdminService channelAdminService;
-  private final CategoryAdminService categoryAdminService;
 
   @Override
   public List<VideoDto> getAll(int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    List<Video> videoList = videoRepository.findAll(pageable).stream().toList();
-    return convertToDtoList(videoList);
+    return videoRepository.findAll(pageable).stream().toList().stream().map(videoMapper::toDto).toList();
   }
 
   @Override
@@ -42,16 +39,15 @@ public class VideoAdminServiceImpl implements VideoAdminService {
 
   @Override
   public VideoDto save(VideoDto videoDto) throws NotFoundException {
-    categoryAdminService.getById(videoDto.getCategoryId());
     channelAdminService.getById(videoDto.getChannelId());
     Video receivedVideo = videoMapper.toEntity(videoDto);
     Video savedVideo = videoRepository.save(receivedVideo);
+    log.info("Video saved successfully. ID: {}", savedVideo.getId());
     return videoMapper.toDto(savedVideo);
   }
 
   @Override
   public VideoDto update(String id, VideoDto videoDto) throws NotFoundException {
-    categoryAdminService.getById(videoDto.getCategoryId());
     channelAdminService.getById(videoDto.getChannelId());
     Video convertedVideo = videoMapper.toEntity(videoDto);
     Video foundVideo = findById(id);
@@ -60,9 +56,10 @@ public class VideoAdminServiceImpl implements VideoAdminService {
     foundVideo.setLink(convertedVideo.getLink());
     foundVideo.setDate(convertedVideo.getDate());
     foundVideo.setChannelId(convertedVideo.getChannelId());
-    foundVideo.setCategoryId(convertedVideo.getCategoryId());
+    foundVideo.setCategory(convertedVideo.getCategory());
 
     Video savedVideo = videoRepository.save(foundVideo);
+    log.info("Video updated successfully. ID: {}", savedVideo.getId());
     return videoMapper.toDto(savedVideo);
   }
 
@@ -72,17 +69,13 @@ public class VideoAdminServiceImpl implements VideoAdminService {
     videoRepository.deleteById(id);
   }
 
-  private List<VideoDto> convertToDtoList(List<Video> videoList) {
-    return videoList.stream().map(videoMapper::toDto).toList();
-  }
-
   private Video findById(String id) throws NotFoundException {
     Optional<Video> optionalVideo = videoRepository.findById(id);
     if (optionalVideo.isPresent()) {
       return optionalVideo.get();
     }
-    NotFoundException exception = new NotFoundException("No Video found with ID: " + id);
-    log.error("Error occurred while processing Video with ID: " + id, exception);
+    NotFoundException exception = new NotFoundException(String.format("No video found with ID: %s", id));
+    log.error("Failed to find video. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }
 }

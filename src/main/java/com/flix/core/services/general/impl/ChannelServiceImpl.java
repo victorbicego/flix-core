@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class ChannelServiceImpl implements ChannelService {
 
   private final ChannelRepository channelRepository;

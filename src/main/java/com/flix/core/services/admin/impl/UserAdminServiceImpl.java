@@ -39,6 +39,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     User receivedUser = userMapper.toEntity(userDto);
     receivedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
     User savedUser = userRepository.save(receivedUser);
+    log.info("User saved successfully. ID: {}", savedUser.getId());
     return userMapper.toDto(savedUser);
   }
 
@@ -57,6 +58,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     foundUser.setCredentialNonExpired(userDto.isCredentialNonExpired());
 
     User savedUser = userRepository.save(foundUser);
+    log.info("User updated successfully. ID: {}", savedUser.getId());
     return userMapper.toDto(savedUser);
   }
 
@@ -71,8 +73,8 @@ public class UserAdminServiceImpl implements UserAdminService {
     if (optionalUser.isPresent()) {
       return optionalUser.get();
     }
-    NotFoundException exception = new NotFoundException("No User found with ID: " + id);
-    log.error("Error occurred while processing User with ID: " + id, exception);
+    NotFoundException exception = new NotFoundException(String.format("No user found with ID: %s", id));
+    log.error("Failed to find user. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }
 }

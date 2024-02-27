@@ -12,6 +12,4 @@ public interface JwtService {
   String generateToken(UserDetails userDetails);
 
   String generateToken(Map<String, Object> extraClaims, UserDetails userDetails);
-
-  String extractUsernameFromToken();
 }

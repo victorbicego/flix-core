@@ -1,9 +1,10 @@
 package com.flix.core.services.general;
 
-import com.flix.core.models.dtos.CategoryDto;
 import java.util.List;
+
+import com.flix.core.models.enums.Category;
 
 public interface CategoryService {
 
-  List<CategoryDto> getAll();
+  List<Category> getAll();
 }

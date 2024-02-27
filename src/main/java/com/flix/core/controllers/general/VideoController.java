@@ -1,6 +1,7 @@
 package com.flix.core.controllers.general;
 
 import com.flix.core.models.dtos.VideoDto;
+import com.flix.core.models.enums.Category;
 import com.flix.core.services.general.VideoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,11 @@ public class VideoController {
     return videoService.getRecent(page, size);
   }
 
-  @GetMapping("/recent/{id}")
+  @GetMapping("/recent/{category}")
   public List<VideoDto> getRecentByCategory(
-      @PathVariable String id,
+      @PathVariable Category category,
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    return videoService.getRecentByCategory(id, page, size);
+    return videoService.getRecentByCategory(category, page, size);
   }
 }

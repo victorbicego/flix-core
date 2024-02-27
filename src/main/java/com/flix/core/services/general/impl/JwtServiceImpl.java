@@ -58,20 +58,6 @@ public class JwtServiceImpl implements JwtService {
         .compact();
   }
 
-  @Override
-  public String extractUsernameFromToken() {
-    HttpServletRequest request =
-        ((ServletRequestAttributes)
-                Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-            .getRequest();
-    String authorizationHeader = request.getHeader("Authorization");
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      return extractClaim(authorizationHeader.substring(7), Claims::getSubject);
-    } else {
-      throw new IllegalArgumentException("JWT Token is not present or invalid.");
-    }
-  }
-
   private Claims extractAllClaims(String token) {
     return Jwts.parserBuilder()
         .setSigningKey(getSignInKey())

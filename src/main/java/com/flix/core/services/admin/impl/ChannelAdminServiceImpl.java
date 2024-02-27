@@ -1,10 +1,8 @@
 package com.flix.core.services.admin.impl;
 
-import com.flix.core.exceptions.InvalidOperationException;
 import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.ChannelDto;
 import com.flix.core.models.entities.Channel;
-import com.flix.core.models.entities.Video;
 import com.flix.core.models.mappers.ChannelMapper;
 import com.flix.core.repositories.ChannelRepository;
 import com.flix.core.repositories.VideoRepository;
@@ -43,6 +41,7 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
   public ChannelDto save(ChannelDto channelDto) {
     Channel receivedChannel = channelMapper.toEntity(channelDto);
     Channel savedChannel = channelRepository.save(receivedChannel);
+    log.info("Channel saved successfully. ID: {}", savedChannel.getId());
     return channelMapper.toDto(savedChannel);
   }
 
@@ -55,24 +54,20 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
     foundChannel.setTag(convertedChannel.getTag());
     foundChannel.setLogoLink(convertedChannel.getLogoLink());
     foundChannel.setMainLink(convertedChannel.getMainLink());
+    foundChannel.setCategories(convertedChannel.getCategories());
 
     Channel savedChannel = channelRepository.save(foundChannel);
+    log.info("Channel updated successfully. ID: {}", savedChannel.getId());
     return channelMapper.toDto(savedChannel);
   }
 
   @Override
-  public void deleteById(String id) throws NotFoundException, InvalidOperationException {
+  public void deleteById(String id) throws NotFoundException {
     findById(id);
-    List<Video> videoList = videoRepository.findAllByChannelId(id);
-    if (videoList.size() > 1) {
-      channelRepository.deleteById(id);
-    } else {
-      InvalidOperationException exception =
-          new InvalidOperationException(
-              "Channel with ID: " + id + " is in use and could not be deleted.");
-      log.error("Error occurred while processing Channel with ID: " + id, exception);
-      throw exception;
-    }
+    videoRepository.deleteAllByChannelId(id);
+    log.info("Deleted all videos associated with channel ID: {}", id);
+    channelRepository.deleteById(id);
+    log.info("Channel deleted successfully. ID: {}", id);
   }
 
   private Channel findById(String id) throws NotFoundException {
@@ -80,8 +75,8 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
     if (optionalChannel.isPresent()) {
       return optionalChannel.get();
     }
-    NotFoundException exception = new NotFoundException("No Channel found with ID: " + id);
-    log.error("Error occurred while processing Channel with ID: " + id, exception);
+    NotFoundException exception = new NotFoundException(String.format("No channel found with ID: %s", id));
+    log.error("Failed to find channel. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }
 }

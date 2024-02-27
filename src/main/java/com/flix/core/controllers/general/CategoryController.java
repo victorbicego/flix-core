@@ -1,6 +1,6 @@
 package com.flix.core.controllers.general;
 
-import com.flix.core.models.dtos.CategoryDto;
+import com.flix.core.models.enums.Category;
 import com.flix.core.services.general.CategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class CategoryController {
   private final CategoryService categoryService;
 
   @GetMapping("/get")
-  public List<CategoryDto> getAll() {
+  public List<Category> getAll() {
     return categoryService.getAll();
   }
 }

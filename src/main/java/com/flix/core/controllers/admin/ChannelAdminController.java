@@ -1,10 +1,11 @@
 package com.flix.core.controllers.admin;
 
-import com.flix.core.exceptions.InvalidOperationException;
 import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.ChannelDto;
 import com.flix.core.services.admin.ChannelAdminService;
 import java.util.List;
+
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,19 +29,18 @@ public class ChannelAdminController {
   }
 
   @PostMapping("/save")
-  public ChannelDto save(@RequestBody ChannelDto channelDto) {
+  public ChannelDto save(@RequestBody @Valid ChannelDto channelDto) {
     return channelAdminService.save(channelDto);
   }
 
   @PutMapping("/update/{id}")
-  public ChannelDto update(@PathVariable String id, @RequestBody ChannelDto channelDto)
+  public ChannelDto update(@PathVariable String id, @RequestBody @Valid ChannelDto channelDto)
       throws NotFoundException {
     return channelAdminService.update(id, channelDto);
   }
 
   @DeleteMapping("/delete/{id}")
-  public void deleteById(@PathVariable String id)
-      throws NotFoundException, InvalidOperationException {
+  public void deleteById(@PathVariable String id) throws NotFoundException {
     channelAdminService.deleteById(id);
   }
 }

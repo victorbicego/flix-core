@@ -3,6 +3,8 @@ package com.flix.core.models.entities;
 import com.flix.core.models.enums.Role;
 import java.util.Collection;
 import java.util.List;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,14 +17,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class User implements UserDetails {
 
   @Id private String id;
-  private String username;
-  private String password;
-  private Role role;
-  private String name;
-  private String surname;
+  @NotNull private String username;
+  @NotNull private String password;
+  @NotNull private Role role;
+  @NotNull private String name;
+  @NotNull private String surname;
+  @NotNull
   private boolean isAccountNonExpired;
+  @NotNull
   private boolean isAccountNonLocked;
+  @NotNull
   private boolean isCredentialNonExpired;
+  @NotNull
   private boolean isEnabled;
 
   @Override

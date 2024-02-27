@@ -2,12 +2,12 @@ package com.flix.core.services.general.impl;
 
 import com.flix.core.models.dtos.VideoDto;
 import com.flix.core.models.entities.Video;
+import com.flix.core.models.enums.Category;
 import com.flix.core.models.mappers.VideoMapper;
 import com.flix.core.repositories.VideoRepository;
 import com.flix.core.services.general.VideoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class VideoServiceImpl implements VideoService {
 
   private final VideoRepository videoRepository;
@@ -33,14 +32,14 @@ public class VideoServiceImpl implements VideoService {
   @Override
   public List<VideoDto> getRecent(int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Page<Video> videoPage = videoRepository.findSortByDate(pageable);
+    Page<Video> videoPage = videoRepository.findOrderByDate(pageable);
     return convertToDtoList(videoPage);
   }
 
   @Override
-  public List<VideoDto> getRecentByCategory(String id, int page, int size) {
+  public List<VideoDto> getRecentByCategory(Category category, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    Page<Video> videoPage = videoRepository.findByCategoryIdOrderByDateDesc(id, pageable);
+    Page<Video> videoPage = videoRepository.findByCategoryOrderByDateDesc(category, pageable);
     return convertToDtoList(videoPage);
   }
 
