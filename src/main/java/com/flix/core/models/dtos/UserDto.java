@@ -11,26 +11,39 @@ public class UserDto {
 
   private String id;
 
-  @JsonView(Views.Register.class)
+  @JsonView({Views.Register.class, Views.UpdateUser.class, Views.AdminUpdateUser.class})
   @NotNull
   private String username;
 
-  @JsonView(Views.Register.class)
+  @JsonView({Views.Register.class, Views.UpdatePassword.class, Views.AdminUpdatePassword.class})
   @NotNull
   private String password;
 
-  @NotNull private Role role;
+  @JsonView({Views.AdminUpdateUser.class})
+  @NotNull
+  private Role role;
 
-  @JsonView(Views.Register.class)
+  @JsonView({Views.Register.class, Views.UpdateUser.class, Views.AdminUpdateUser.class})
   @NotNull
   private String name;
 
-  @JsonView(Views.Register.class)
+  @JsonView({Views.Register.class, Views.UpdateUser.class, Views.AdminUpdateUser.class})
   @NotNull
   private String surname;
 
-  @NotNull private boolean isAccountNonExpired;
-  @NotNull private boolean isAccountNonLocked;
-  @NotNull private boolean isCredentialNonExpired;
-  @NotNull private boolean isEnabled;
+  @JsonView({Views.AdminUpdateUser.class})
+  @NotNull
+  private boolean isAccountNonExpired;
+
+  @JsonView({Views.AdminUpdateUser.class})
+  @NotNull
+  private boolean isAccountNonLocked;
+
+  @JsonView({Views.AdminUpdateUser.class})
+  @NotNull
+  private boolean isCredentialNonExpired;
+
+  @JsonView({Views.AdminUpdateUser.class})
+  @NotNull
+  private boolean isEnabled;
 }

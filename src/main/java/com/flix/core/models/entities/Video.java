@@ -15,9 +15,11 @@ public class Video {
   @NotNull boolean isCategorized;
   @Id private String id;
   @NotNull private String title;
+
   @Indexed(unique = true)
   @NotNull
   private String link;
+
   @NotNull private LocalDate date;
   @NotNull private String description;
   @NotNull private String channelId;

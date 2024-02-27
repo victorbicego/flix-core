@@ -1,6 +1,8 @@
 package com.flix.core.controllers.admin;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import com.flix.core.exceptions.NotFoundException;
+import com.flix.core.models.Views;
 import com.flix.core.models.dtos.UserDto;
 import com.flix.core.services.admin.UserAdminService;
 import jakarta.validation.Valid;
@@ -38,10 +40,18 @@ public class UserAdminController {
     return userAdminService.save(userDto);
   }
 
+  @JsonView(Views.AdminUpdateUser.class)
   @PutMapping("/update/{id}")
   public UserDto update(@PathVariable String id, @RequestBody @Valid UserDto userDto)
       throws NotFoundException {
     return userAdminService.update(id, userDto);
+  }
+
+  @JsonView(Views.AdminUpdatePassword.class)
+  @PutMapping("/update-password/{id}")
+  public UserDto updatePassword(@PathVariable String id, @RequestBody @Valid UserDto userDto)
+      throws NotFoundException {
+    return userAdminService.updatePassword(id, userDto);
   }
 
   @DeleteMapping("/delete/{id}")

@@ -51,14 +51,13 @@ public class VideoAdminServiceImpl implements VideoAdminService {
   @Override
   public VideoDto update(String id, VideoDto videoDto) throws NotFoundException {
     channelAdminService.getById(videoDto.getChannelId());
-    Video convertedVideo = videoMapper.toEntity(videoDto);
     Video foundVideo = findById(id);
 
-    foundVideo.setTitle(convertedVideo.getTitle());
-    foundVideo.setLink(convertedVideo.getLink());
-    foundVideo.setDate(convertedVideo.getDate());
-    foundVideo.setChannelId(convertedVideo.getChannelId());
-    foundVideo.setCategory(convertedVideo.getCategory());
+    foundVideo.setTitle(videoDto.getTitle());
+    foundVideo.setLink(videoDto.getLink());
+    foundVideo.setDate(videoDto.getDate());
+    foundVideo.setChannelId(videoDto.getChannelId());
+    foundVideo.setCategory(videoDto.getCategory());
 
     Video savedVideo = videoRepository.save(foundVideo);
     log.info("Video updated successfully. ID: {}", savedVideo.getId());

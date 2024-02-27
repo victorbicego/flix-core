@@ -47,14 +47,13 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
 
   @Override
   public ChannelDto update(String id, ChannelDto channelDto) throws NotFoundException {
-    Channel convertedChannel = channelMapper.toEntity(channelDto);
     Channel foundChannel = findById(id);
 
-    foundChannel.setName(convertedChannel.getName());
-    foundChannel.setTag(convertedChannel.getTag());
-    foundChannel.setLogoLink(convertedChannel.getLogoLink());
-    foundChannel.setMainLink(convertedChannel.getMainLink());
-    foundChannel.setCategories(convertedChannel.getCategories());
+    foundChannel.setName(channelDto.getName());
+    foundChannel.setTag(channelDto.getTag());
+    foundChannel.setLogoLink(channelDto.getLogoLink());
+    foundChannel.setMainLink(channelDto.getMainLink());
+    foundChannel.setCategories(channelDto.getCategories());
 
     Channel savedChannel = channelRepository.save(foundChannel);
     log.info("Channel updated successfully. ID: {}", savedChannel.getId());

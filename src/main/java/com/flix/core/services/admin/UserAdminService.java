@@ -15,4 +15,6 @@ public interface UserAdminService {
   UserDto update(String id, UserDto userDto) throws NotFoundException;
 
   void deleteById(String id) throws NotFoundException;
+
+  UserDto updatePassword(String id, UserDto userDto) throws NotFoundException;
 }

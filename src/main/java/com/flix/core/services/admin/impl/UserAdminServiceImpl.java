@@ -50,7 +50,6 @@ public class UserAdminServiceImpl implements UserAdminService {
     foundUser.setName(userDto.getName());
     foundUser.setSurname(userDto.getSurname());
     foundUser.setUsername(userDto.getUsername());
-    foundUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
     foundUser.setRole(userDto.getRole());
     foundUser.setEnabled(userDto.isEnabled());
     foundUser.setAccountNonExpired(userDto.isAccountNonExpired());
@@ -59,6 +58,17 @@ public class UserAdminServiceImpl implements UserAdminService {
 
     User savedUser = userRepository.save(foundUser);
     log.info("User updated successfully. ID: {}", savedUser.getId());
+    return userMapper.toDto(savedUser);
+  }
+
+  @Override
+  public UserDto updatePassword(String id, UserDto userDto) throws NotFoundException {
+    User foundUser = findById(id);
+
+    foundUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+
+    User savedUser = userRepository.save(foundUser);
+    log.info("Password updated successfully. User with ID: {}", foundUser.getId());
     return userMapper.toDto(savedUser);
   }
 
