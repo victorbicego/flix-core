@@ -75,7 +75,8 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
     if (optionalChannel.isPresent()) {
       return optionalChannel.get();
     }
-    NotFoundException exception = new NotFoundException(String.format("No channel found with ID: %s", id));
+    NotFoundException exception =
+        new NotFoundException(String.format("No channel found with ID: %s", id));
     log.error("Failed to find channel. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }

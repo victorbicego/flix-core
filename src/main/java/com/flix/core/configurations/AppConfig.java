@@ -39,7 +39,8 @@ public class AppConfig {
             .findByUsername(username)
             .orElseThrow(
                 () ->
-                    new UsernameNotFoundException(String.format("User with username '%s' could not be found.", username)));
+                    new UsernameNotFoundException(
+                        String.format("User with username '%s' could not be found.", username)));
   }
 
   @Bean

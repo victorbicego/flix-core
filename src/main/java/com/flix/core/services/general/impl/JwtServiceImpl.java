@@ -1,6 +1,5 @@
 package com.flix.core.services.general.impl;
 
-import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.services.general.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -8,14 +7,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -65,15 +63,16 @@ public class JwtServiceImpl implements JwtService {
   @Override
   public String getActiveUsername() {
     HttpServletRequest request =
-            ((ServletRequestAttributes)
-                    Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                    .getRequest();
+        ((ServletRequestAttributes)
+                Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+            .getRequest();
     String authorizationHeader = request.getHeader("Authorization");
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
       return extractClaim(authorizationHeader.substring(7), Claims::getSubject);
     } else {
-      IllegalArgumentException exception = new IllegalArgumentException("JWT Token is not present or invalid.");
-      log.error("Failed to get token. Reason: {}",exception.getMessage(),exception);
+      IllegalArgumentException exception =
+          new IllegalArgumentException("JWT Token is not present or invalid.");
+      log.error("Failed to get token. Reason: {}", exception.getMessage(), exception);
       throw exception;
     }
   }

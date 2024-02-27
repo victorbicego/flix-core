@@ -3,9 +3,8 @@ package com.flix.core.controllers.admin;
 import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.ChannelDto;
 import com.flix.core.services.admin.ChannelAdminService;
-import java.util.List;
-
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

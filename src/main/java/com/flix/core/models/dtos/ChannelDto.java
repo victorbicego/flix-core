@@ -1,11 +1,9 @@
 package com.flix.core.models.dtos;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
-import java.util.List;
-
 import com.flix.core.models.enums.Category;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import lombok.Data;
 
 @Data
 public class ChannelDto {

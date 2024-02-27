@@ -1,14 +1,14 @@
 package com.flix.core.models.dtos;
 
+import com.flix.core.models.enums.Category;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import lombok.Data;
 
-import com.flix.core.models.enums.Category;
-
 @Data
 public class VideoDto {
 
+  @NotNull boolean isCategorized;
   private String id;
   @NotNull private String title;
   @NotNull private String link;
@@ -16,5 +16,4 @@ public class VideoDto {
   @NotNull private String description;
   @NotNull private String channelId;
   @NotNull private Category category;
-  @NotNull boolean isCategorized;
 }

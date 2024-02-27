@@ -28,7 +28,9 @@ public class VideoAdminServiceImpl implements VideoAdminService {
   @Override
   public List<VideoDto> getAll(int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    return videoRepository.findAll(pageable).stream().toList().stream().map(videoMapper::toDto).toList();
+    return videoRepository.findAll(pageable).stream().toList().stream()
+        .map(videoMapper::toDto)
+        .toList();
   }
 
   @Override
@@ -75,7 +77,8 @@ public class VideoAdminServiceImpl implements VideoAdminService {
     if (optionalVideo.isPresent()) {
       return optionalVideo.get();
     }
-    NotFoundException exception = new NotFoundException(String.format("No video found with ID: %s", id));
+    NotFoundException exception =
+        new NotFoundException(String.format("No video found with ID: %s", id));
     log.error("Failed to find video. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }

@@ -31,7 +31,8 @@ public class AuthenticationController {
 
   @JsonView(Views.Register.class)
   @PostMapping("/register")
-  public AuthenticationResponseDto register(@RequestBody @Valid UserDto userDto) throws NotFoundException {
+  public AuthenticationResponseDto register(@RequestBody @Valid UserDto userDto)
+      throws NotFoundException {
     return authenticationService.register(userDto);
   }
 }

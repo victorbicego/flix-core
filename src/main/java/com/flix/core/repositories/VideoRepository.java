@@ -2,8 +2,6 @@ package com.flix.core.repositories;
 
 import com.flix.core.models.entities.Video;
 import com.flix.core.models.enums.Category;
-
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -74,7 +74,8 @@ public class UserAdminServiceImpl implements UserAdminService {
     if (optionalUser.isPresent()) {
       return optionalUser.get();
     }
-    NotFoundException exception = new NotFoundException(String.format("No user found with ID: %s", id));
+    NotFoundException exception =
+        new NotFoundException(String.format("No user found with ID: %s", id));
     log.error("Failed to find user. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }

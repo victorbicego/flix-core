@@ -15,5 +15,4 @@ public interface VideoAdminService {
   VideoDto update(String id, VideoDto videoDto) throws NotFoundException;
 
   void deleteById(String id) throws NotFoundException;
-
 }

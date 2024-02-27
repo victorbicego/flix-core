@@ -52,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     User savedUser = userRepository.save(receivedUser);
     log.info("User '{}' registered successfully.", savedUser.getUsername());
-    return authenticate(savedUser.getUsername(),savedUser.getPassword());
+    return authenticate(savedUser.getUsername(), savedUser.getPassword());
   }
 
   private User getByUsername(String username) throws NotFoundException {
@@ -60,7 +60,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     if (optionalUser.isPresent()) {
       return optionalUser.get();
     }
-    NotFoundException exception = new NotFoundException(String.format("No user found with username: %s", username));
+    NotFoundException exception =
+        new NotFoundException(String.format("No user found with username: %s", username));
     log.error("Failed to find user. Reason: {}", exception.getMessage(), exception);
     throw exception;
   }
