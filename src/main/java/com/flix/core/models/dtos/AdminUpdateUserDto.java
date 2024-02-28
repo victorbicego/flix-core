@@ -9,11 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class AdminUpdateUserDto {
 
-  private String id;
   @NotNull private String username;
-  @NotNull private String password;
   @NotNull private Role role;
   @NotNull private String name;
   @NotNull private String surname;

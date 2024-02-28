@@ -1,11 +1,9 @@
 package com.flix.core.controllers.general;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.flix.core.exceptions.NotFoundException;
-import com.flix.core.models.Views;
 import com.flix.core.models.dtos.AuthenticationDto;
 import com.flix.core.models.dtos.AuthenticationResponseDto;
-import com.flix.core.models.dtos.UserDto;
+import com.flix.core.models.dtos.RegisterDto;
 import com.flix.core.services.general.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +27,9 @@ public class AuthenticationController {
         authenticationDto.getUsername(), authenticationDto.getPassword());
   }
 
-  @JsonView(Views.Register.class)
   @PostMapping("/register")
-  public AuthenticationResponseDto register(@RequestBody @Valid UserDto userDto)
+  public AuthenticationResponseDto register(@RequestBody @Valid RegisterDto registerDto)
       throws NotFoundException {
-    return authenticationService.register(userDto);
+    return authenticationService.register(registerDto);
   }
 }

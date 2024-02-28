@@ -8,8 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationDto {
+public class ChangePasswordDto {
 
-  @NotNull private String username;
   @NotNull private String password;
 }

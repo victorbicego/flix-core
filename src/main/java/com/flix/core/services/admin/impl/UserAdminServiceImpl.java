@@ -1,6 +1,8 @@
 package com.flix.core.services.admin.impl;
 
 import com.flix.core.exceptions.NotFoundException;
+import com.flix.core.models.dtos.AdminUpdateUserDto;
+import com.flix.core.models.dtos.ChangePasswordDto;
 import com.flix.core.models.dtos.UserDto;
 import com.flix.core.models.entities.User;
 import com.flix.core.models.mappers.UserMapper;
@@ -44,17 +46,17 @@ public class UserAdminServiceImpl implements UserAdminService {
   }
 
   @Override
-  public UserDto update(String id, UserDto userDto) throws NotFoundException {
+  public UserDto update(String id, AdminUpdateUserDto adminUpdateUserDto) throws NotFoundException {
     User foundUser = findById(id);
 
-    foundUser.setName(userDto.getName());
-    foundUser.setSurname(userDto.getSurname());
-    foundUser.setUsername(userDto.getUsername());
-    foundUser.setRole(userDto.getRole());
-    foundUser.setEnabled(userDto.isEnabled());
-    foundUser.setAccountNonExpired(userDto.isAccountNonExpired());
-    foundUser.setAccountNonLocked(userDto.isAccountNonLocked());
-    foundUser.setCredentialNonExpired(userDto.isCredentialNonExpired());
+    foundUser.setName(adminUpdateUserDto.getName());
+    foundUser.setSurname(adminUpdateUserDto.getSurname());
+    foundUser.setUsername(adminUpdateUserDto.getUsername());
+    foundUser.setRole(adminUpdateUserDto.getRole());
+    foundUser.setEnabled(adminUpdateUserDto.isEnabled());
+    foundUser.setAccountNonExpired(adminUpdateUserDto.isAccountNonExpired());
+    foundUser.setAccountNonLocked(adminUpdateUserDto.isAccountNonLocked());
+    foundUser.setCredentialNonExpired(adminUpdateUserDto.isCredentialNonExpired());
 
     User savedUser = userRepository.save(foundUser);
     log.info("User updated successfully. ID: {}", savedUser.getId());
@@ -62,10 +64,11 @@ public class UserAdminServiceImpl implements UserAdminService {
   }
 
   @Override
-  public UserDto updatePassword(String id, UserDto userDto) throws NotFoundException {
+  public UserDto updatePassword(String id, ChangePasswordDto changePasswordDto)
+      throws NotFoundException {
     User foundUser = findById(id);
 
-    foundUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    foundUser.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
 
     User savedUser = userRepository.save(foundUser);
     log.info("Password updated successfully. User with ID: {}", foundUser.getId());

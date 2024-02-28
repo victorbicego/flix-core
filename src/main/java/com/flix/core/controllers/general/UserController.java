@@ -1,8 +1,8 @@
 package com.flix.core.controllers.general;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.flix.core.exceptions.NotFoundException;
-import com.flix.core.models.Views;
+import com.flix.core.models.dtos.ChangePasswordDto;
+import com.flix.core.models.dtos.UpdateUserDto;
 import com.flix.core.models.dtos.UserDto;
 import com.flix.core.services.general.UserService;
 import jakarta.validation.Valid;
@@ -27,16 +27,15 @@ public class UserController {
     return userService.getInfo();
   }
 
-  @JsonView(Views.UpdateUser.class)
   @PutMapping("/update")
-  public UserDto update(@RequestBody @Valid UserDto userDto) throws NotFoundException {
+  public UserDto update(@RequestBody @Valid UpdateUserDto userDto) throws NotFoundException {
     return userService.update(userDto);
   }
 
-  @JsonView(Views.UpdatePassword.class)
   @PutMapping("/update-password")
-  public UserDto updatePassword(@RequestBody @Valid UserDto userDto) throws NotFoundException {
-    return userService.updatePassword(userDto);
+  public UserDto updatePassword(@RequestBody @Valid ChangePasswordDto changePasswordDto)
+      throws NotFoundException {
+    return userService.updatePassword(changePasswordDto);
   }
 
   @DeleteMapping("/delete")

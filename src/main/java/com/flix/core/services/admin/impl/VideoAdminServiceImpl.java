@@ -56,6 +56,7 @@ public class VideoAdminServiceImpl implements VideoAdminService {
     foundVideo.setTitle(videoDto.getTitle());
     foundVideo.setLink(videoDto.getLink());
     foundVideo.setDate(videoDto.getDate());
+    foundVideo.setDescription(videoDto.getDescription());
     foundVideo.setChannelId(videoDto.getChannelId());
     foundVideo.setCategory(videoDto.getCategory());
 
@@ -73,7 +74,8 @@ public class VideoAdminServiceImpl implements VideoAdminService {
 
   @Override
   public boolean existsVideo(String videoLink) {
-    return videoRepository.findByLink(videoLink).isPresent();
+    String completeVideoLink = "https://www.youtube.com/watch?v=" + videoLink;
+    return videoRepository.findByLink(completeVideoLink).isPresent();
   }
 
   private Video findById(String id) throws NotFoundException {

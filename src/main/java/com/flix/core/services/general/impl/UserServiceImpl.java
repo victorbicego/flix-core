@@ -1,6 +1,8 @@
 package com.flix.core.services.general.impl;
 
 import com.flix.core.exceptions.NotFoundException;
+import com.flix.core.models.dtos.ChangePasswordDto;
+import com.flix.core.models.dtos.UpdateUserDto;
 import com.flix.core.models.dtos.UserDto;
 import com.flix.core.models.entities.User;
 import com.flix.core.models.mappers.UserMapper;
@@ -11,6 +13,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
   private final JwtService jwtService;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   public UserDto getInfo() throws NotFoundException {
@@ -38,12 +42,13 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserDto update(UserDto userDto) throws NotFoundException {
+  public UserDto update(UpdateUserDto updateUserDto) throws NotFoundException {
     String username = jwtService.getActiveUsername();
     User foundUser = getByUsername(username);
 
-    foundUser.setName(userDto.getName());
-    foundUser.setSurname(userDto.getSurname());
+    foundUser.setName(updateUserDto.getName());
+    foundUser.setSurname(updateUserDto.getSurname());
+    foundUser.setUsername(updateUserDto.getUsername());
 
     User updatedUser = userRepository.save(foundUser);
     log.info("User updated successfully. ID: {}", foundUser.getId());
@@ -51,10 +56,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserDto updatePassword(UserDto userDto) throws NotFoundException {
+  public UserDto updatePassword(ChangePasswordDto changePasswordDto) throws NotFoundException {
     String username = jwtService.getActiveUsername();
     User foundUser = getByUsername(username);
-    foundUser.setPassword(userDto.getPassword());
+    foundUser.setPassword(passwordEncoder.encode(changePasswordDto.getPassword()));
     User updatedUser = userRepository.save(foundUser);
     log.info("Password updated successfully. User with ID: {}", foundUser.getId());
     return userMapper.toDto(updatedUser);

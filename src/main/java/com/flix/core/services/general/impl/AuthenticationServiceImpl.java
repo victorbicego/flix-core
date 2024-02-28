@@ -2,7 +2,7 @@ package com.flix.core.services.general.impl;
 
 import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.AuthenticationResponseDto;
-import com.flix.core.models.dtos.UserDto;
+import com.flix.core.models.dtos.RegisterDto;
 import com.flix.core.models.entities.User;
 import com.flix.core.models.enums.Role;
 import com.flix.core.models.mappers.UserMapper;
@@ -40,19 +40,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public AuthenticationResponseDto register(UserDto userDto) throws NotFoundException {
-    User receivedUser = userMapper.toEntity(userDto);
+  public AuthenticationResponseDto register(RegisterDto registerDto) throws NotFoundException {
+    User newUser = new User();
 
-    receivedUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-    receivedUser.setRole(Role.USER);
-    receivedUser.setEnabled(true);
-    receivedUser.setAccountNonExpired(true);
-    receivedUser.setAccountNonLocked(true);
-    receivedUser.setCredentialNonExpired(true);
+    newUser.setName(registerDto.getName());
+    newUser.setSurname(registerDto.getSurname());
+    newUser.setUsername(registerDto.getUsername());
+    newUser.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+    newUser.setRole(Role.USER);
+    newUser.setEnabled(true);
+    newUser.setAccountNonExpired(true);
+    newUser.setAccountNonLocked(true);
+    newUser.setCredentialNonExpired(true);
 
-    User savedUser = userRepository.save(receivedUser);
+    User savedUser = userRepository.save(newUser);
     log.info("User '{}' registered successfully.", savedUser.getUsername());
-    return authenticate(savedUser.getUsername(), savedUser.getPassword());
+    return authenticate(registerDto.getUsername(), registerDto.getPassword());
   }
 
   private User getByUsername(String username) throws NotFoundException {
