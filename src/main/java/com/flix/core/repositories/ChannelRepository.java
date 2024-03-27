@@ -9,5 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ChannelRepository extends MongoRepository<Channel, String> {
 
-  Page<Channel> findByNameContainingIgnoreCase(String word, Pageable pageable);
 }

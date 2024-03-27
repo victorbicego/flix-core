@@ -1,8 +1,6 @@
 package com.flix.core.models.entities;
 
-import com.flix.core.models.enums.Category;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -20,10 +18,9 @@ public class Channel {
   private String mainLink;
 
   @NotNull private String logoLink;
+  @NotNull private String backgroundLink;
 
   @Indexed(unique = true)
   @NotNull
   private String tag;
-
-  @NotNull private List<Category> categories;
 }

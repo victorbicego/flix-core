@@ -9,14 +9,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/user")
@@ -26,7 +19,8 @@ public class UserAdminController {
   private final UserAdminService userAdminService;
 
   @GetMapping("/get")
-  public List<UserDto> getAll() {
+  public List<UserDto> getAll(
+      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
     return userAdminService.getAll();
   }
 

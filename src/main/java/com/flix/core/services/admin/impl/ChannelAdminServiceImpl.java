@@ -53,7 +53,7 @@ public class ChannelAdminServiceImpl implements ChannelAdminService {
     foundChannel.setTag(channelDto.getTag());
     foundChannel.setLogoLink(channelDto.getLogoLink());
     foundChannel.setMainLink(channelDto.getMainLink());
-    foundChannel.setCategories(channelDto.getCategories());
+    foundChannel.setBackgroundLink(channelDto.getBackgroundLink());
 
     Channel savedChannel = channelRepository.save(foundChannel);
     log.info("Channel updated successfully. ID: {}", savedChannel.getId());
