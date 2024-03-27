@@ -5,5 +5,5 @@ import com.flix.core.models.dtos.ChannelDto;
 
 public interface ChannelService {
 
-  ChannelDto findById(String channelId) throws NotFoundException;
+    ChannelDto findById(String channelId) throws NotFoundException;
 }

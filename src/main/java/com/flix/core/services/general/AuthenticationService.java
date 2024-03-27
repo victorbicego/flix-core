@@ -6,7 +6,7 @@ import com.flix.core.models.dtos.RegisterDto;
 
 public interface AuthenticationService {
 
-  AuthenticationResponseDto authenticate(String username, String password) throws NotFoundException;
+    AuthenticationResponseDto authenticate(String username, String password) throws NotFoundException;
 
-  AuthenticationResponseDto register(RegisterDto registerDto) throws NotFoundException;
+    AuthenticationResponseDto register(RegisterDto registerDto) throws NotFoundException;
 }

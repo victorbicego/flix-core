@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VideoWithChannelDto {
 
-  @NotNull VideoDto video;
-  @NotNull private ChannelDto channel;
+    @NotNull VideoDto video;
+    @NotNull
+    private ChannelDto channel;
 }
