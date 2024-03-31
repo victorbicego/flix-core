@@ -10,12 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterDto {
 
-    @NotNull
-    private String username;
-    @NotNull
-    private String password;
-    @NotNull
-    private String name;
-    @NotNull
-    private String surname;
+  @NotNull private String username;
+  @NotNull private String password;
+  @NotNull private String name;
+  @NotNull private String surname;
 }

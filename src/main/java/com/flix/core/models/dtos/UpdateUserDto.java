@@ -10,10 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UpdateUserDto {
 
-    @NotNull
-    private String username;
-    @NotNull
-    private String name;
-    @NotNull
-    private String surname;
+  @NotNull private String username;
+  @NotNull private String name;
+  @NotNull private String surname;
 }

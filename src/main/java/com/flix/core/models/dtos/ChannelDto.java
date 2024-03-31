@@ -10,15 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChannelDto {
 
-    private String id;
-    @NotNull
-    private String name;
-    @NotNull
-    private String mainLink;
-    @NotNull
-    private String logoLink;
-    @NotNull
-    private String backgroundLink;
-    @NotNull
-    private String tag;
+  @NotNull private String id;
+  @NotNull private String name;
+  @NotNull private String mainLink;
+  @NotNull private String logoLink;
+  @NotNull private String backgroundLink;
 }
