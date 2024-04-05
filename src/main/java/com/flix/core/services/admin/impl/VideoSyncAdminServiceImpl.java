@@ -7,10 +7,7 @@ import com.flix.core.models.dtos.VideoSyncDto;
 import com.flix.core.models.entities.VideoSync;
 import com.flix.core.models.mappers.VideoSyncMapper;
 import com.flix.core.repositories.VideoSyncRepository;
-import com.flix.core.services.admin.ChannelAdminService;
-import com.flix.core.services.admin.ProcessVideoSyncAdminService;
-import com.flix.core.services.admin.VideoAdminService;
-import com.flix.core.services.admin.VideoSyncAdminService;
+import com.flix.core.services.admin.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -23,16 +20,19 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
 
+  private static final Pattern TITLE_PATTERN =
+      Pattern.compile("\"title\":\\{\"runs\":\\[\\{\"text\":\"([^\"]+)\"");
+  private static final Pattern VIDEO_ID_PATTERN =
+      Pattern.compile("\"watchEndpoint\":\\{\"videoId\":\"([^\"]+)\"");
   private final VideoSyncRepository videoSyncRepository;
   private final VideoSyncMapper videoSyncMapper;
   private final VideoAdminService videoAdminService;
@@ -78,11 +78,11 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
     foundVideoSync.setDuration(videoSyncDto.getDuration());
 
     if (isVideoSyncCompleted(foundVideoSync)) {
-      VideoDto savedVideoDto = this.videoAdminService.save(mapToVideoDto(foundVideoSync));
+      VideoDto savedVideoDto = videoAdminService.save(mapToVideoDto(foundVideoSync));
       log.info("VideoSync save successfully as Video. ID: {}", savedVideoDto.getId());
       videoSyncRepository.deleteById(foundVideoSync.getId());
       log.info("VideoSync delete successfully. ID: {}", foundVideoSync.getId());
-      return this.mapToVideoSyncDto(savedVideoDto);
+      return mapToVideoSyncDto(savedVideoDto);
     } else {
       VideoSync savedVideoSync = videoSyncRepository.save(foundVideoSync);
       log.info("VideoSync updated successfully. ID: {}", savedVideoSync.getId());
@@ -90,7 +90,6 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
     }
   }
 
-  // Todo: add schedule for this method
   @Override
   public void addMoreVideos() throws IOException, NotFoundException {
     int page = 0;
@@ -112,20 +111,15 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
 
   private void processVideosFromChannel(ChannelDto channelDto)
       throws IOException, NotFoundException {
-    String channelOverviewBody =
-        getResponseBody("https://www.youtube.com/" + channelDto.getId() + "/videos");
+    String channelOverviewBody = getResponseBody(createChannelVideosUrl(channelDto.getId()));
 
-    Matcher titleMatcher =
-        Pattern.compile("\"title\":\\{\"runs\":\\[\\{\"text\":\"([^\"]+)\"")
-            .matcher(channelOverviewBody);
-    Matcher videoIdMatcher =
-        Pattern.compile("\"watchEndpoint\":\\{\"videoId\":\"([^\"]+)\"")
-            .matcher(channelOverviewBody);
+    Matcher titleMatcher = TITLE_PATTERN.matcher(channelOverviewBody);
+    Matcher videoIdMatcher = VIDEO_ID_PATTERN.matcher(channelOverviewBody);
 
     while (titleMatcher.find() && videoIdMatcher.find()) {
-      String videoLinkIncomplete =
-          videoIdMatcher.group(1) + "&ab_channel=" + channelDto.getName().replace(" ", "+");
-      if (!isPresent(videoLinkIncomplete)) {
+      String completeVideoLink =
+          createCompleteVideoLink(videoIdMatcher.group(1), channelDto.getName());
+      if (!isPresentInVideosSync(completeVideoLink)) {
         VideoSync generatedVideoSync =
             processVideoSyncAdminService.generateSingleVideo(
                 channelDto, titleMatcher.group(1), videoIdMatcher.group(1));
@@ -136,9 +130,17 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
     }
   }
 
-  private boolean isPresent(String videoLinkIncomplete) {
-    String completeVideoLink = "https://www.youtube.com/watch?v=" + videoLinkIncomplete;
-    return videoSyncRepository.findByLink(completeVideoLink).isPresent();
+  private String createChannelVideosUrl(String channelId) {
+    return String.format("https://www.youtube.com/%s/videos", channelId);
+  }
+
+  private String createCompleteVideoLink(String videoId, String channelName) {
+    return String.format(
+        "https://www.youtube.com/watch?v=%s&ab_channel=%s", videoId, channelName.replace(" ", "+"));
+  }
+
+  private boolean isPresentInVideosSync(String videoLink) {
+    return videoSyncRepository.findByLink(videoLink).isPresent();
   }
 
   private void saveVideo(VideoSync videoSync) throws NotFoundException {
@@ -161,6 +163,7 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
 
   private VideoDto mapToVideoDto(VideoSync videoSync) {
     VideoDto videoDto = new VideoDto();
+    videoDto.setId(videoSync.getId());
     videoDto.setTitle(videoSync.getTitle());
     videoDto.setLink(videoSync.getLink());
     videoDto.setDescription(videoSync.getDescription());
@@ -173,6 +176,7 @@ public class VideoSyncAdminServiceImpl implements VideoSyncAdminService {
 
   private VideoSyncDto mapToVideoSyncDto(VideoDto videoDto) {
     VideoSyncDto videoSyncDto = new VideoSyncDto();
+    videoSyncDto.setId(videoDto.getId());
     videoSyncDto.setTitle(videoDto.getTitle());
     videoSyncDto.setLink(videoDto.getLink());
     videoSyncDto.setDescription(videoDto.getDescription());

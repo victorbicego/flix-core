@@ -16,5 +16,5 @@ public interface VideoAdminService {
 
   void deleteById(String id) throws NotFoundException;
 
-  boolean isPresent(String videoLinkIncomplete);
+  boolean isPresentInVideos(String videoLinkIncomplete);
 }

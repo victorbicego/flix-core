@@ -11,13 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class VideoAdminServiceImpl implements VideoAdminService {
 
@@ -74,9 +73,8 @@ public class VideoAdminServiceImpl implements VideoAdminService {
   }
 
   @Override
-  public boolean isPresent(String videoLinkIncomplete) {
-    String completeVideoLink = "https://www.youtube.com/watch?v=" + videoLinkIncomplete;
-    return videoRepository.findByLink(completeVideoLink).isPresent();
+  public boolean isPresentInVideos(String videoLink) {
+    return videoRepository.findByLink(videoLink).isPresent();
   }
 
   private Video findById(String id) throws NotFoundException {

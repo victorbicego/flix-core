@@ -8,11 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class CategoryUtilsAdminServiceImpl implements CategoryUtilsAdminService {
 
@@ -20,7 +19,8 @@ public class CategoryUtilsAdminServiceImpl implements CategoryUtilsAdminService 
       new HashMap<>();
 
   static {
-    FUNCTION_MAP.put("@DunamisMovement_", CategoryUtilsAdminServiceImpl::dunamisMovementGetCategory);
+    FUNCTION_MAP.put(
+        "@DunamisMovement_", CategoryUtilsAdminServiceImpl::dunamisMovementGetCategory);
     FUNCTION_MAP.put("@jesus_copy", CategoryUtilsAdminServiceImpl::JesusCopyGetCategory);
     FUNCTION_MAP.put(
         "@PositivamentePodcast", CategoryUtilsAdminServiceImpl::positivamentePodcastGetCategory);
@@ -31,7 +31,6 @@ public class CategoryUtilsAdminServiceImpl implements CategoryUtilsAdminService 
     if (title.toLowerCase().contains("hangout") && duration.toMinutes() > 20) {
       return Category.PODCAST;
     }
-
     return null;
   }
 

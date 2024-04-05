@@ -20,24 +20,29 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class ProcessVideoSyncAdminServiceImpl implements ProcessVideoSyncAdminService {
 
+  private static final Pattern DURATION_PATTERN =
+      Pattern.compile("\"approxDurationMs\":\"(\\d+)\"");
+  private static final Pattern DATE_PATTERN =
+      Pattern.compile("meta itemprop=\"datePublished\" content=\"([^\"]+)\"");
+  private static final Pattern DESCRIPTION_PATTERN =
+      Pattern.compile("\"isOwnerViewing\":false,\"shortDescription\":\"([^\"]+)\"");
   private final VideoAdminService videoAdminService;
   private final CategoryUtilsAdminService categoryUtilsAdminService;
 
   @Override
   public VideoSync generateSingleVideo(ChannelDto channelDto, String title, String videoId)
       throws IOException {
-    String videoLinkIncomplete = videoId + "&ab_channel=" + channelDto.getName().replace(" ", "+");
-    if (!videoAdminService.isPresent(videoLinkIncomplete)) {
-      String videoLink = "https://www.youtube.com/watch?v=" + videoLinkIncomplete;
-      String videoOverviewBody = getResponseBody(videoLink);
+    String completeVideoLink = createCompleteVideoLink(videoId, channelDto.getName());
+
+    if (!videoAdminService.isPresentInVideos(completeVideoLink)) {
+      String videoOverviewBody = getResponseBody(completeVideoLink);
       LocalDate date = getVideoDate(videoOverviewBody);
       String description = getVideoDescription(videoOverviewBody);
       Duration duration = getVideoDuration(videoOverviewBody);
@@ -45,17 +50,20 @@ public class ProcessVideoSyncAdminServiceImpl implements ProcessVideoSyncAdminSe
           categoryUtilsAdminService.getVideoCategory(
               channelDto.getId(), title, description, duration);
       return createVideo(
-          title, videoLink, date, description, channelDto.getId(), category, duration);
+          title, completeVideoLink, date, description, channelDto.getId(), category, duration);
     }
     return null;
   }
 
+  private String createCompleteVideoLink(String videoId, String channelName) {
+    return String.format(
+        "https://www.youtube.com/watch?v=%s&ab_channel=%s", videoId, channelName.replace(" ", "+"));
+  }
+
   private Duration getVideoDuration(String responseBody) {
-    Matcher approxDurationMsMatcher =
-        Pattern.compile("\"approxDurationMs\":\"(\\d+)\"").matcher(responseBody);
+    Matcher approxDurationMsMatcher = DURATION_PATTERN.matcher(responseBody);
     if (approxDurationMsMatcher.find()) {
-      String durationInMilliseconds = approxDurationMsMatcher.group(1);
-      long durationInLongMilliseconds = Long.parseLong(durationInMilliseconds);
+      long durationInLongMilliseconds = Long.parseLong(approxDurationMsMatcher.group(1));
       return Duration.ofMillis(durationInLongMilliseconds);
     }
     return null;
@@ -69,22 +77,18 @@ public class ProcessVideoSyncAdminServiceImpl implements ProcessVideoSyncAdminSe
   }
 
   private LocalDate getVideoDate(String responseBody) {
-    Matcher datePublishedMatcher =
-        Pattern.compile("meta itemprop=\"datePublished\" content=\"([^\"]+)\"")
-            .matcher(responseBody);
+    Matcher datePublishedMatcher = DATE_PATTERN.matcher(responseBody);
     if (datePublishedMatcher.find()) {
-      String datePublished = datePublishedMatcher.group(1);
       LocalDateTime dateTime =
-          LocalDateTime.parse(datePublished, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+          LocalDateTime.parse(
+              datePublishedMatcher.group(1), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
       return dateTime.toLocalDate();
     }
     return null;
   }
 
   private String getVideoDescription(String responseBody) {
-    Matcher descriptionMatcher =
-        Pattern.compile("\"isOwnerViewing\":false,\"shortDescription\":\"([^\"]+)\"")
-            .matcher(responseBody);
+    Matcher descriptionMatcher = DESCRIPTION_PATTERN.matcher(responseBody);
     if (descriptionMatcher.find()) {
       return descriptionMatcher.group(1);
     }

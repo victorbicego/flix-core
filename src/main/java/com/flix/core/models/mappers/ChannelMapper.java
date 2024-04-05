@@ -4,11 +4,10 @@ import com.flix.core.models.dtos.ChannelDto;
 import com.flix.core.models.entities.Channel;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class ChannelMapper {
 
   private final ModelMapper modelMapper;

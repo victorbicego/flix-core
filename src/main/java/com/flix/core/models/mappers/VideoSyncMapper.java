@@ -4,11 +4,10 @@ import com.flix.core.models.dtos.VideoSyncDto;
 import com.flix.core.models.entities.VideoSync;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class VideoSyncMapper {
 
   private final ModelMapper modelMapper;

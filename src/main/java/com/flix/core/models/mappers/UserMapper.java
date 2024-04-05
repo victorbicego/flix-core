@@ -4,11 +4,10 @@ import com.flix.core.models.dtos.UserDto;
 import com.flix.core.models.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 public class UserMapper {
 
   private final ModelMapper modelMapper;

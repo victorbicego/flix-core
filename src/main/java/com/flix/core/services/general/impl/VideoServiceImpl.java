@@ -4,7 +4,6 @@ import com.flix.core.exceptions.NotFoundException;
 import com.flix.core.models.dtos.VideoDto;
 import com.flix.core.models.dtos.VideoWithChannelDto;
 import com.flix.core.models.entities.Video;
-import com.flix.core.models.enums.Category;
 import com.flix.core.models.mappers.VideoMapper;
 import com.flix.core.repositories.VideoRepository;
 import com.flix.core.services.general.ChannelService;
@@ -16,8 +15,8 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,10 +25,11 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SampleOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor
 @Slf4j
 public class VideoServiceImpl implements VideoService {
 
@@ -42,51 +42,8 @@ public class VideoServiceImpl implements VideoService {
   public List<VideoWithChannelDto> findVideos(
       String channelId, String category, String search, int page, int size) {
     Pageable pageable = PageRequest.of(page, size);
-    if (!channelId.isEmpty() && !channelId.equals("null")) {
-      return this.getVideosFromChannel(channelId, category, pageable);
-    }
-    if (!search.isEmpty() && !search.equals("null")) {
-      return this.getVideosFromWord(search, category, pageable);
-    }
-    return this.getVideosFromCategory(category, pageable);
-  }
-
-  private List<VideoWithChannelDto> getVideosFromChannel(
-      String channelId, String category, Pageable pageable) {
-    Page<Video> videoPage;
-    if (category.isEmpty() || Category.valueOf(category).equals(Category.ALL)) {
-      videoPage = videoRepository.findByChannelIdOrderByDateDesc(channelId, pageable);
-    } else {
-      videoPage =
-          videoRepository.findByChannelIdAndCategoryContainingIgnoreCaseOrderByDateDesc(
-              channelId, category, pageable);
-    }
-    return mapAllToVideoWithChannelDto(convertToDtoList(videoPage));
-  }
-
-  private List<VideoWithChannelDto> getVideosFromWord(
-      String word, String category, Pageable pageable) {
-    Page<Video> videoPage;
-    if (Category.valueOf(category).equals(Category.ALL)) {
-      videoPage = videoRepository.findByTitleContainingIgnoreCaseOrderByDateDesc(word, pageable);
-    } else {
-      videoPage =
-          videoRepository
-              .findByTitleContainingIgnoreCaseAndCategoryContainingIgnoreCaseOrderByDateDesc(
-                  word, category, pageable);
-    }
-    return mapAllToVideoWithChannelDto(convertToDtoList(videoPage));
-  }
-
-  private List<VideoWithChannelDto> getVideosFromCategory(String category, Pageable pageable) {
-    Page<Video> videoPage;
-    if (category.isEmpty() || Category.valueOf(category).equals(Category.ALL)) {
-      videoPage = videoRepository.findByOrderByDateDesc(pageable);
-    } else {
-      videoPage =
-          videoRepository.findByCategoryEqualsOrderByDateDesc(Category.valueOf(category), pageable);
-    }
-    return mapAllToVideoWithChannelDto(convertToDtoList(videoPage));
+    return mapAllToVideoWithChannelDto(
+        convertToDtoList(findVideoByParameters(search, category, channelId, pageable)));
   }
 
   private List<VideoWithChannelDto> mapAllToVideoWithChannelDto(List<VideoDto> videoDtoList) {
@@ -113,24 +70,21 @@ public class VideoServiceImpl implements VideoService {
 
   @Override
   public List<VideoWithChannelDto> getRelatedVideos(String id) throws NotFoundException {
-    Video foundVideo = this.findById(id);
-    int numberFromSameCategory = generateRandomNumber(2, 8);
-    int numberFromSameChannel = 10 - numberFromSameCategory;
+    Video foundVideo = findById(id);
+    int numberFromSameCategory = generateRandomNumber(3, 9);
+    int numberFromSameChannel = 12 - numberFromSameCategory;
 
     List<Video> videosFromSameChannel =
-        this.findRandomVideosByChannelId(foundVideo.getChannelId(), numberFromSameChannel);
+        findRandomVideosByChannelId(foundVideo.getChannelId(), numberFromSameChannel);
     List<Video> videosFromSameCategory =
-        this.findRandomVideosByCategoryAndExcludingChannelId(
+        findRandomVideosByCategoryAndExcludingChannelId(
             foundVideo.getCategory().toString(), foundVideo.getChannelId(), numberFromSameCategory);
 
     List<Video> finalList = new ArrayList<>();
     finalList.addAll(videosFromSameChannel);
     finalList.addAll(videosFromSameCategory);
-
     Collections.shuffle(finalList);
-
     List<VideoDto> videoDtoList = finalList.stream().map(videoMapper::toDto).toList();
-
     return mapAllToVideoWithChannelDto(videoDtoList);
   }
 
@@ -152,6 +106,33 @@ public class VideoServiceImpl implements VideoService {
 
   private List<VideoDto> convertToDtoList(Page<Video> videoPage) {
     return videoPage.getContent().stream().map(videoMapper::toDto).toList();
+  }
+
+  private Page<Video> findVideoByParameters(
+      String title, String category, String channelId, Pageable pageable) {
+    Criteria criteria = new Criteria();
+
+    if (category.equals("ALL")) {
+      category = "";
+    }
+
+    if (title != null && !title.isEmpty()) {
+      log.info("TITLE");
+      criteria = criteria.and("title").regex(title, "i");
+    }
+    if (!category.isEmpty()) {
+      log.info("CATEGORY");
+      criteria = criteria.and("category").regex(category, "i");
+    }
+    if (channelId != null && !channelId.isEmpty()) {
+      log.info("CHANNEL");
+      criteria = criteria.and("channelId").regex(channelId, "i");
+    }
+
+    Query query = Query.query(criteria).with(pageable);
+    List<Video> videos = mongoTemplate.find(query, Video.class);
+    long count = mongoTemplate.count(Query.query(criteria), Video.class);
+    return new PageImpl<>(videos, pageable, count);
   }
 
   private List<Video> findRandomVideosByCategoryAndExcludingChannelId(

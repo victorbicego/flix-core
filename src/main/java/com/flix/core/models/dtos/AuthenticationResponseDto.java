@@ -1,6 +1,7 @@
 package com.flix.core.models.dtos;
 
 import com.flix.core.models.enums.Role;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthenticationResponseDto {
 
-  private String jwtToken;
-  private String username;
-  private Role role;
+  @NotNull private String jwtToken;
+  @NotNull private String username;
+  @NotNull private Role role;
 }
